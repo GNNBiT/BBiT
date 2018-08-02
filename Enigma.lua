@@ -20,7 +20,7 @@ function Enigma.OnUpdate()
 end	
 
 function Enigma.Combo()
-	
+		
 	local blink = NPC.GetItem(Enigma.Hero, "item_blink")
 	local shiva = NPC.GetItem(Enigma.Hero, "item_shivas_guard")
 	local bkb = NPC.GetItem(Enigma.Hero, "item_black_king_bar")
@@ -32,23 +32,29 @@ function Enigma.Combo()
 	
 	local blink_radius = 1200
 	local black_hole_radius = 420	
-	local enemyHeroes = Entity.GetHeroesInRadius(Enigma.Hero, blink_radius + black_hole_radius, Enum.TeamType.TEAM_ENEMY)
+	local enemyHeroes = nil
 	
-	if #enemyHeroes < Menu.GetValue(Enigma.enemyCount) then return end
+	if Entity.GetHeroesInRadius(Enigma.Hero, blink_radius + black_hole_radius, Enum.TeamType.TEAM_ENEMY) then
+		enemyHeroes = Entity.GetHeroesInRadius(Enigma.Hero, blink_radius + black_hole_radius, Enum.TeamType.TEAM_ENEMY) end
+	
+	if not enemyHeroes or #enemyHeroes < Menu.GetValue(Enigma.enemyCount) then return end
 	if not Ability.IsReady(blackHole) or not Ability.IsCastable(blackHole, heroMana) then 		
 		if not rfr or not Ability.IsReady(rfr) or not Ability.IsCastable(rfr, heroMana - Ability.GetManaCost(blackHole)) then return end
 	end	
-	if Menu.IsEnabled(Enigma.Refresher) and not Ability.IsReady(blackHole) and os.clock() > Enigma.GameDelay + 0.1 then Ability.CastNoTarget(rfr) Enigma.GameDelay = os.clock() end
+	if Menu.IsEnabled(Enigma.refresher) and not Ability.IsReady(blackHole) and os.clock() > Enigma.GameDelay + 0.1 then Ability.CastNoTarget(rfr) Enigma.GameDelay = os.clock() end
 	
 	local bestPos = Enigma.BestPosition(enemyHeroes, black_hole_radius)
 	local distance = math.floor(math.abs((Entity.GetAbsOrigin(Enigma.Hero) - bestPos) : Length2D())) - black_hole_radius * 0.5 - 61 --костыль
-	Log.Write(distance)
+	--Log.Write(distance)
+	
+	if NPC.GetModifier(Enigma.Hero, 'modifier_enigma_black_hole_thinker') then Log.Write('return') return end
 	if blink and Ability.IsReady(blink) and os.clock() > Enigma.GameDelay + 0.1 then Ability.CastPosition(blink, bestPos) Enigma.GameDelay = os.clock() end
-	if distance < 10 then
-	if os.clock() > Enigma.GameDelay + 0.1 and pulse and Ability.IsReady(pulse) and Ability.IsCastable(pulse, heroMana - Ability.GetManaCost(blackHole)) 
+	
+	if distance < 50 then -- костыль
+		if os.clock() > Enigma.GameDelay + 0.1 and pulse and Ability.IsReady(pulse) and Ability.IsCastable(pulse, heroMana - Ability.GetManaCost(blackHole)) 
 			then Ability.CastPosition(pulse, bestPos) Enigma.GameDelay = os.clock() end
-		if Menu.IsEnabled(Enigma.BKB) and bkb and Ability.IsReady(bkb) and os.clock() > Enigma.GameDelay + 0.1 then Ability.CastNoTarget(bkb) Enigma.GameDelay = os.clock() end
-		if Menu.IsEnabled(Enigma.Shiva) and shiva and Ability.IsReady(shiva) and Ability.IsCastable(shiva, heroMana - Ability.GetManaCost(blackHole)) then Ability.CastNoTarget(shiva) end 
+		if Menu.IsEnabled(Enigma.bkb) and bkb and Ability.IsReady(bkb) and os.clock() > Enigma.GameDelay + 0.1 then Ability.CastNoTarget(bkb) Enigma.GameDelay = os.clock() end
+		if Menu.IsEnabled(Enigma.shiva) and shiva and Ability.IsReady(shiva) and Ability.IsCastable(shiva, heroMana - Ability.GetManaCost(blackHole) - Ability.GetManaCost(pulse)) then Ability.CastNoTarget(shiva) end 
 	end
 	if os.clock() > Enigma.GameDelay + 0.1 then Ability.CastPosition(blackHole, bestPos) Enigma.GameDelay = os.clock() end
 	
