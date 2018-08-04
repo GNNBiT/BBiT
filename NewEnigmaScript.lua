@@ -68,7 +68,7 @@ local Enigma = {}
 		local distance = math.floor(math.abs((Entity.GetAbsOrigin(Enigma.Hero) - Enigma.bestPos) : Length2D())) - black_hole_radius * 0.5
 		if distance > blink_radius + black_hole_radius * 0.25 then return end
 		if Enigma.NextOrder == 0 then  
-		elseif Enigma.NextOrder == 1 and distance > black_hole_radius then Ability.CastPosition(Enigma.blink, Enigma.bestPos) 
+		elseif Enigma.NextOrder == 1 then Ability.CastPosition(Enigma.blink, Enigma.bestPos) 
 		elseif Enigma.NextOrder == 2 then Ability.CastNoTarget(Enigma.bkb) 
 		elseif Enigma.NextOrder == 3 then Ability.CastPosition(Enigma.pulse, Enigma.bestPos) 
 		elseif Enigma.NextOrder == 4 then Ability.CastNoTarget(Enigma.shiva) 
@@ -98,7 +98,7 @@ local Enigma = {}
 		
 				
 					
-		if Enigma.blink and Ability.IsReady(Enigma.blink) then Enigma.NextOrder = 1 return end
+		if Enigma.blink and Ability.IsReady(Enigma.blink) and distance > black_hole_radius  then Enigma.NextOrder = 1 return end
 		if Enigma.bkb and Ability.IsReady(Enigma.bkb) and Menu.IsEnabled(Enigma.useBKB)  then Enigma.NextOrder = 2 return end
 		
 		if not (Enigma.refresher and Ability.IsReady(Enigma.refresher) and not Ability.IsCastable(Enigma.black_hole, Enigma.heroMana - Ability.GetManaCost(Enigma.refresher))) then   
