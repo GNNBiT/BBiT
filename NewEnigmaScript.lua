@@ -47,31 +47,35 @@ local Enigma = {}
 		if not Entity.IsAlive(Enigma.Hero) then return true end
 		if not Menu.IsEnabled(Enigma.optionEnable) then return true end
 		Enigma.GameTime = os.clock()
-		if Enigma.GameTime - Enigma.Delay > Enigma.TimerInfo then Enigma.DelayUpdate() Enigma.TimerInfo = Enigma.GameTime end
+		if Enigma.GameTime - Enigma.Delay > Enigma.TimerInfo then Enigma.DelayUpdate() end
 		if not Enigma.black_hole then return end
 		if not Ability.IsReady(Enigma.black_hole) or not Ability.IsCastable(Enigma.black_hole, Enigma.heroMana) then 		
 			if not Enigma.refresher or not Ability.IsReady(Enigma.refresher) or not Ability.IsCastable(Enigma.refresher, Enigma.heroMana - Ability.GetManaCost(Enigma.black_hole)) then return end
 		end	
-		if Menu.IsKeyDown(Enigma.optionKey) and Enigma.TimerCombo < Enigma.GameTime then Enigma.Combo() end
+		if Menu.IsKeyDown(Enigma.optionKey) and Enigma.GameTime - Enigma.Delay > Enigma.TimerCombo then Enigma.Combo() end
 	end		
 	
 	function Enigma.Combo()
-		if NPC.GetModifier(Enigma.Hero, 'modifier_enigma_black_hole_thinker') or Enigma.countEn < Menu.GetValue(Enigma.enemyCount) then return end
+		local isBH = false
+		for i, npc in ipairs(Enigma.enemyes) do
+			if NPC.HasModifier(npc, 'modifier_enigma_black_hole_pull') then isBH = true Log.Write('has') end
+		end
+		if Enigma.countEn < Menu.GetValue(Enigma.enemyCount) or isBH then return end
 		local distance = math.floor(math.abs((Entity.GetAbsOrigin(Enigma.Hero) - Enigma.bestPos) : Length2D())) - black_hole_radius * 0.5
 		if distance > blink_radius + black_hole_radius * 0.25 then return end
 		if Enigma.NextOrder == 0 then  
-		elseif Enigma.NextOrder == 1 then Ability.CastPosition(Enigma.blink, Enigma.bestPos) return
-		elseif Enigma.NextOrder == 2 then Ability.CastNoTarget(Enigma.bkb) return
+		elseif Enigma.NextOrder == 1 then Ability.CastPosition(Enigma.blink, Enigma.bestPos) 
+		elseif Enigma.NextOrder == 2 then Ability.CastNoTarget(Enigma.bkb) 
 		elseif Enigma.NextOrder == 3 then Ability.CastPosition(Enigma.pulse, Enigma.bestPos) 
-		elseif Enigma.NextOrder == 4 then Ability.CastNoTarget(Enigma.shiva) return
-		elseif Enigma.NextOrder == 5 then Ability.CastPosition(Enigma.black_hole, Enigma.bestPos)
-		elseif Enigma.NextOrder == 6 then Ability.CastNoTarget(Enigma.refresher) return
+		elseif Enigma.NextOrder == 4 then Ability.CastNoTarget(Enigma.shiva) 
+		elseif Enigma.NextOrder == 5 then Ability.CastPosition(Enigma.black_hole, Enigma.bestPos) Enigma.TimerCombo = Enigma.GameTime + Ability.GetCastPoint(Enigma.black_hole) return
+		elseif Enigma.NextOrder == 6 then Ability.CastNoTarget(Enigma.refresher)
 		else end		
-		Enigma.NextOrder = 0
-		Enigma.TimerCombo = Enigma.GameTime
+		Enigma.NextOrder = 0	
 	end
 	
 	function Enigma.DelayUpdate()	
+		Enigma.TimerInfo = Enigma.GameTime
 		Enigma.NextOrder = 0
 		Enigma.enemyes = nil
 		if Entity.GetHeroesInRadius(Enigma.Hero, blink_radius + black_hole_radius, Enum.TeamType.TEAM_ENEMY) then
@@ -103,7 +107,8 @@ local Enigma = {}
 			end
 		
 		if Enigma.black_hole and Ability.IsReady(Enigma.black_hole) then Enigma.NextOrder = 5 return end		
-		if Enigma.refresher and Ability.IsReady(Enigma.refresher) and Menu.IsEnabled(Enigma.useRefresher) then Enigma.NextOrder = 6 return end		
+		if Enigma.refresher and not NPC.GetModifier(Enigma.Hero, 'modifier_enigma_black_hole_thinker') and Ability.IsReady(Enigma.refresher) and Menu.IsEnabled(Enigma.useRefresher) 
+			then Enigma.NextOrder = 6 return end		
 		
 	end
 	
