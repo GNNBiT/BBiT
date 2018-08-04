@@ -58,7 +58,7 @@ local Enigma = {}
 	function Enigma.Combo()
 		local isBH = false
 		for i, npc in ipairs(Enigma.enemyes) do
-			if NPC.HasModifier(npc, 'modifier_enigma_black_hole_pull') then isBH = true Log.Write('has') end
+			if NPC.HasModifier(npc, 'modifier_enigma_black_hole_pull') then isBH = true end
 		end
 		if isBH then return end
 		if Enigma.countEn < Menu.GetValue(Enigma.enemyCount) then return end
