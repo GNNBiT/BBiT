@@ -58,7 +58,6 @@ local Enigma = {}
 	function Enigma.Combo()
 		if NPC.GetModifier(Enigma.Hero, 'modifier_enigma_black_hole_thinker') or Enigma.countEn < Menu.GetValue(Enigma.enemyCount) then return end
 		local distance = math.floor(math.abs((Entity.GetAbsOrigin(Enigma.Hero) - Enigma.bestPos) : Length2D())) - black_hole_radius * 0.5
-		Log.Write(distance)
 		if distance > blink_radius + black_hole_radius * 0.25 then return end
 		if Enigma.NextOrder == 0 then  
 		elseif Enigma.NextOrder == 1 then Ability.CastPosition(Enigma.blink, Enigma.bestPos) return
