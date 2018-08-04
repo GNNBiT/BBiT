@@ -19,6 +19,7 @@ local Enigma = {}
 	Enigma.useShiva = Menu.AddOptionBool({"Hero Specific","Enigma"},"Shiva",false)
 	Enigma.useRefresher = Menu.AddOptionBool({"Hero Specific","Enigma"},"Refresher",false)
 	Enigma.enemyCount = Menu.AddOptionSlider({"Hero Specific","Enigma"}, "Enemy count", 1, 5, 1)
+	Enigma.optionLag = Menu.AddOptionBool({"Hero Specific","Enigma"}, "If don't work", false)
 	
 	Enigma.Hero = nil
 	
@@ -56,15 +57,18 @@ local Enigma = {}
 	end		
 	
 	function Enigma.Combo()
-		local isBH = false
-		for i, npc in ipairs(Enigma.enemyes) do
-			if NPC.HasModifier(npc, 'modifier_enigma_black_hole_pull') then isBH = true Log.Write('has') end
+		if Menu.IsEnabled(Enigma.optionLag) then
+			local isBH = false
+			for i, npc in ipairs(Enigma.enemyes) do
+				if NPC.HasModifier(npc, 'modifier_enigma_black_hole_pull') then isBH = true Log.Write('has') end
+			end
+			if isBH and NPC.GetModifier(Enigma.Hero, 'modifier_enigma_black_hole_thinker') then return end
 		end
-		if Enigma.countEn < Menu.GetValue(Enigma.enemyCount) or isBH then return end
+		if Enigma.countEn < Menu.GetValue(Enigma.enemyCount) then return end
 		local distance = math.floor(math.abs((Entity.GetAbsOrigin(Enigma.Hero) - Enigma.bestPos) : Length2D())) - black_hole_radius * 0.5
 		if distance > blink_radius + black_hole_radius * 0.25 then return end
 		if Enigma.NextOrder == 0 then  
-		elseif Enigma.NextOrder == 1 then Ability.CastPosition(Enigma.blink, Enigma.bestPos) 
+		elseif Enigma.NextOrder == 1 and distance > black_hole_radius then Ability.CastPosition(Enigma.blink, Enigma.bestPos) 
 		elseif Enigma.NextOrder == 2 then Ability.CastNoTarget(Enigma.bkb) 
 		elseif Enigma.NextOrder == 3 then Ability.CastPosition(Enigma.pulse, Enigma.bestPos) 
 		elseif Enigma.NextOrder == 4 then Ability.CastNoTarget(Enigma.shiva) 
@@ -107,7 +111,7 @@ local Enigma = {}
 			end
 		
 		if Enigma.black_hole and Ability.IsReady(Enigma.black_hole) then Enigma.NextOrder = 5 return end		
-		if Enigma.refresher and not NPC.GetModifier(Enigma.Hero, 'modifier_enigma_black_hole_thinker') and Ability.IsReady(Enigma.refresher) and Menu.IsEnabled(Enigma.useRefresher) 
+		if Enigma.refresher and Ability.IsReady(Enigma.refresher) and Menu.IsEnabled(Enigma.useRefresher) 
 			then Enigma.NextOrder = 6 return end		
 		
 	end
