@@ -36,6 +36,7 @@ local Enigma = {}
 	Enigma.refresher = nil
 	Enigma.heroMana = 0
 	Enigma.bestPos = nil
+	Enigma.countEn = nil
 	Enigma.enemyes = nil
 	
 	local blink_radius = 1200
@@ -55,7 +56,7 @@ local Enigma = {}
 	end		
 	
 	function Enigma.Combo()
-		if NPC.GetModifier(Enigma.Hero, 'modifier_enigma_black_hole_thinker') then return end
+		if NPC.GetModifier(Enigma.Hero, 'modifier_enigma_black_hole_thinker') or Enigma.countEn < Menu.GetValue(Enigma.enemyCount) then return end
 		if Enigma.NextOrder == 0 then  
 		elseif Enigma.NextOrder == 1 then Ability.CastPosition(Enigma.blink, Enigma.bestPos) return
 		elseif Enigma.NextOrder == 2 then Ability.CastNoTarget(Enigma.bkb) return
@@ -64,6 +65,7 @@ local Enigma = {}
 		elseif Enigma.NextOrder == 5 then Ability.CastPosition(Enigma.black_hole, Enigma.bestPos)
 		elseif Enigma.NextOrder == 6 then Ability.CastNoTarget(Enigma.refresher) return
 		else end		
+		Enigma.NextOrder = 0
 		Enigma.TimerCombo = Enigma.GameTime
 	end
 	
@@ -73,7 +75,7 @@ local Enigma = {}
 		if Entity.GetHeroesInRadius(Enigma.Hero, blink_radius + black_hole_radius, Enum.TeamType.TEAM_ENEMY) then
 			Enigma.enemyes = Entity.GetHeroesInRadius(Enigma.Hero, blink_radius + black_hole_radius, Enum.TeamType.TEAM_ENEMY) end
 		if not Enigma.enemyes or #Enigma.enemyes == 0 then return end
-		Enigma.bestPos = Enigma.BestPosition(Enigma.enemyes, black_hole_radius)
+		Enigma.bestPos, Enigma.countEn = Enigma.BestPosition(Enigma.enemyes, black_hole_radius)
 		
 		Enigma.blink = NPC.GetItem(Enigma.Hero, "item_blink")
 		Enigma.shiva = NPC.GetItem(Enigma.Hero, "item_shivas_guard")
@@ -128,8 +130,7 @@ local Enigma = {}
 				end
 			end
 		end
-		if maxNum < Menu.GetValue(Enigma.enemyCount) then return nil end
-		return bestPos
+		return bestPos, maxNum
 	end
 	
 return Enigma
