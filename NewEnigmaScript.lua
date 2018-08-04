@@ -15,6 +15,10 @@ local Enigma = {}
 	Enigma.optionEnable = Menu.AddOptionBool({"Hero Specific","Enigma"}, "Enabled", false)
 	Enigma.optionKey = Menu.AddKeyOption({"Hero Specific","Enigma"}, "Auto Procast", Enum.ButtonCode.KEY_C)
 	Menu.AddMenuIcon({"Hero Specific", "Enigma"}, "panorama/images/heroes/icons/npc_dota_hero_enigma_png.vtex_c")
+	Enigma.useBKB = Menu.AddOptionBool({"Hero Specific","Enigma"},"BKB",false)
+	Enigma.useShiva = Menu.AddOptionBool({"Hero Specific","Enigma"},"Shiva",false)
+	Enigma.useRefresher = Menu.AddOptionBool({"Hero Specific","Enigma"},"Refresher",false)
+	Enigma.enemyCount = Menu.AddOptionSlider({"Hero Specific","Enigma"}, "Enemy count", 1, 5, 1)
 	
 	Enigma.Hero = nil
 	
@@ -83,17 +87,19 @@ local Enigma = {}
 				
 					
 		if Enigma.blink and Ability.IsReady(Enigma.blink) then Enigma.NextOrder = 1 return end
-		if Enigma.bkb and Ability.IsReady(Enigma.bkb) then Enigma.NextOrder = 2 return end
+		if Enigma.bkb and Ability.IsReady(Enigma.bkb) and Menu.IsEnabled(Enigma.useBKB)  then Enigma.NextOrder = 2 return end
 		
 		if not (Enigma.refresher and Ability.IsReady(Enigma.refresher) and not Ability.IsCastable(Enigma.black_hole, Enigma.heroMana - Ability.GetManaCost(Enigma.refresher))) then   
-			if Enigma.pulse and Ability.IsReady(Enigma.pulse) and Ability.IsCastable(Enigma.black_hole, Enigma.heroMana - Ability.GetManaCost(Enigma.black_hole)) 	
+			if Enigma.pulse and Ability.IsReady(Enigma.pulse) 
+				and Ability.IsCastable(Enigma.black_hole, Enigma.heroMana - Ability.GetManaCost(Enigma.black_hole))	
 				then Enigma.NextOrder = 3 return end
-			if Enigma.shiva and Ability.IsReady(Enigma.shiva) 
+			if Enigma.shiva and Ability.IsReady(Enigma.shiva)
+				and Ability.IsCastable(Enigma.black_hole, Enigma.heroMana - Ability.GetManaCost(Enigma.black_hole)) and Menu.IsEnabled(Enigma.useShiva) 
 				then Enigma.NextOrder = 4 return end
 			end
 		
 		if Enigma.black_hole and Ability.IsReady(Enigma.black_hole) then Enigma.NextOrder = 5 return end		
-		if Enigma.refresher and Ability.IsReady(Enigma.refresher) then Enigma.NextOrder = 6 return end		
+		if Enigma.refresher and Ability.IsReady(Enigma.refresher) and Menu.IsEnabled(Enigma.useRefresher) then Enigma.NextOrder = 6 return end		
 		
 	end
 	
@@ -122,6 +128,7 @@ local Enigma = {}
 				end
 			end
 		end
+		if maxNum < Menu.GetValue(Enigma.enemyCount) then return nil end
 		return bestPos
 	end
 	
