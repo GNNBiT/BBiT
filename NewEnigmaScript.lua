@@ -55,7 +55,7 @@ local Enigma = {}
 		end	
 		if Menu.IsKeyDown(Enigma.optionKey) and Enigma.GameTime - Enigma.Delay > Enigma.TimerCombo then Enigma.Combo() end
 	end		
-	
+	local distance = 0
 	function Enigma.Combo()
 		if Menu.IsEnabled(Enigma.optionLag) then
 			local isBH = false
@@ -65,7 +65,7 @@ local Enigma = {}
 			if isBH and NPC.GetModifier(Enigma.Hero, 'modifier_enigma_black_hole_thinker') then return end
 		end
 		if Enigma.countEn < Menu.GetValue(Enigma.enemyCount) then return end
-		local distance = math.floor(math.abs((Entity.GetAbsOrigin(Enigma.Hero) - Enigma.bestPos) : Length2D())) - black_hole_radius * 0.5
+		distance = math.floor(math.abs((Entity.GetAbsOrigin(Enigma.Hero) - Enigma.bestPos) : Length2D())) - black_hole_radius * 0.5
 		if distance > blink_radius + black_hole_radius * 0.25 then return end
 		if Enigma.NextOrder == 0 then  
 		elseif Enigma.NextOrder == 1 then Ability.CastPosition(Enigma.blink, Enigma.bestPos) 
