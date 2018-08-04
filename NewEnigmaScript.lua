@@ -19,7 +19,6 @@ local Enigma = {}
 	Enigma.useShiva = Menu.AddOptionBool({"Hero Specific","Enigma"},"Shiva",false)
 	Enigma.useRefresher = Menu.AddOptionBool({"Hero Specific","Enigma"},"Refresher",false)
 	Enigma.enemyCount = Menu.AddOptionSlider({"Hero Specific","Enigma"}, "Enemy count", 1, 5, 1)
-	Enigma.optionLag = Menu.AddOptionBool({"Hero Specific","Enigma"}, "If don't work", false)
 	
 	Enigma.Hero = nil
 	
