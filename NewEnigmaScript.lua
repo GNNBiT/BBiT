@@ -57,13 +57,11 @@ local Enigma = {}
 	end		
 	local distance = 0
 	function Enigma.Combo()
-			local isBH = false
-		if Menu.IsEnabled(Enigma.optionLag) then
-			for i, npc in ipairs(Enigma.enemyes) do
-				if NPC.HasModifier(npc, 'modifier_enigma_black_hole_pull') then isBH = true Log.Write('has') end
-			end
+		local isBH = false
+		for i, npc in ipairs(Enigma.enemyes) do
+			if NPC.HasModifier(npc, 'modifier_enigma_black_hole_pull') then isBH = true Log.Write('has') end
 		end
-		if isBH and NPC.GetModifier(Enigma.Hero, 'modifier_enigma_black_hole_thinker') then return end
+		if isBH then return end
 		if Enigma.countEn < Menu.GetValue(Enigma.enemyCount) then return end
 		distance = math.floor(math.abs((Entity.GetAbsOrigin(Enigma.Hero) - Enigma.bestPos) : Length2D())) - black_hole_radius * 0.5
 		if distance > blink_radius + black_hole_radius * 0.25 then return end
