@@ -77,7 +77,7 @@ local Enigma = {}
 		if Entity.GetHeroesInRadius(Enigma.Hero, blink_radius + black_hole_radius, Enum.TeamType.TEAM_ENEMY) then
 			Enigma.enemyes = Entity.GetHeroesInRadius(Enigma.Hero, blink_radius + black_hole_radius, Enum.TeamType.TEAM_ENEMY) end
 		if not Enigma.enemyes or #Enigma.enemyes == 0 then return end
-		Enigma.bestPos, Enigma.countEn = Enigma.BestPosition(Enigma.enemyes, black_hole_radius)
+		Enigma.bestPos, Enigma.countEn = Enigma.BestPosition(Enigma.enemyes, black_hole_radius + 21)
 		
 		Enigma.blink = NPC.GetItem(Enigma.Hero, "item_blink")
 		Enigma.shiva = NPC.GetItem(Enigma.Hero, "item_shivas_guard")
