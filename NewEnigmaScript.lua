@@ -19,6 +19,7 @@ local Enigma = {}
 	Enigma.useBKB = Menu.AddOptionBool({"Hero Specific","Enigma"},"BKB",false)
 	Enigma.useShiva = Menu.AddOptionBool({"Hero Specific","Enigma"},"Shiva",false)
 	Enigma.useRefresher = Menu.AddOptionBool({"Hero Specific","Enigma"},"Refresher",false)
+	Enigma.soulRing = Menu.AddOptionBool({"Hero Specific","Enigma"},"Soul ring",false)
 	Enigma.enemyCount = Menu.AddOptionSlider({"Hero Specific","Enigma"}, "Enemy count", 1, 5, 1)
 	
 	Enigma.Hero = nil
@@ -35,6 +36,7 @@ local Enigma = {}
 	Enigma.bkb = nil
 	Enigma.shiva = nil
 	Enigma.refresher = nil
+	Enigma.soulring = nil
 	Enigma.heroMana = 0
 	Enigma.bestPos = nil
 	Enigma.countEn = nil
@@ -72,6 +74,7 @@ local Enigma = {}
 		elseif Enigma.NextOrder == 4 then Ability.CastNoTarget(Enigma.shiva) 
 		elseif Enigma.NextOrder == 5 then Ability.CastPosition(Enigma.black_hole, Enigma.bestPos) Enigma.TimerCombo = Enigma.GameTime + Ability.GetCastPoint(Enigma.black_hole) return
 		elseif Enigma.NextOrder == 6 then Ability.CastNoTarget(Enigma.refresher)
+		elseif Enigma.NextOrder == 7 then Ability.CastNoTarget(Enigma.soulring)
 		else end		
 		Enigma.NextOrder = 0	
 	end
@@ -90,6 +93,8 @@ local Enigma = {}
 		Enigma.shiva = NPC.GetItem(Enigma.Hero, "item_shivas_guard")
 		Enigma.bkb = NPC.GetItem(Enigma.Hero, "item_black_king_bar")
 		Enigma.refresher = NPC.GetItem(Enigma.Hero, "item_refresher")
+		Enigma.soulring = NPC.GetItem(Enigma.Hero, "item_soul_ring")
+		
 		
 		Enigma.pulse = NPC.GetAbility(Enigma.Hero, "enigma_midnight_pulse")
 		Enigma.black_hole = NPC.GetAbility(Enigma.Hero, "enigma_black_hole")
@@ -98,7 +103,8 @@ local Enigma = {}
 				
 					
 		if Enigma.blink and Ability.IsReady(Enigma.blink) and distance > black_hole_radius  then Enigma.NextOrder = 1 return end
-		if Enigma.bkb and Ability.IsReady(Enigma.bkb) and Menu.IsEnabled(Enigma.useBKB)  then Enigma.NextOrder = 2 return end
+		if Menu.IsEnabled(Enigma.soulRing) and Enigma.soulRing and Ability.IsReady(Enigma.soulring) then Enigma.NextOrder = 7 return end
+		if Menu.IsEnabled(Enigma.useBKB) and Enigma.bkb and Ability.IsReady(Enigma.bkb) then Enigma.NextOrder = 2 return end
 		
 		if not (Enigma.refresher and Ability.IsReady(Enigma.refresher) and not Ability.IsCastable(Enigma.black_hole, Enigma.heroMana - Ability.GetManaCost(Enigma.refresher))) then   
 			if Enigma.pulse and Ability.IsReady(Enigma.pulse) 
@@ -110,7 +116,7 @@ local Enigma = {}
 			end
 		
 		if Enigma.black_hole and Ability.IsReady(Enigma.black_hole) then Enigma.NextOrder = 5 return end		
-		if Enigma.refresher and Ability.IsReady(Enigma.refresher) and Menu.IsEnabled(Enigma.useRefresher) 
+		if Menu.IsEnabled(Enigma.useRefresher) and Enigma.refresher and Ability.IsReady(Enigma.refresher)  
 			then Enigma.NextOrder = 6 return end	
 		Enigma.NextOrder = 0 return 
 		
