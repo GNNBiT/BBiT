@@ -14,6 +14,7 @@
 local Enigma = {}
 	Enigma.optionEnable = Menu.AddOptionBool({"Hero Specific","Enigma"}, "Enabled", false)
 	Enigma.optionKey = Menu.AddKeyOption({"Hero Specific","Enigma"}, "Auto Procast", Enum.ButtonCode.KEY_C)
+	Enigma.SliderDelay = Menu.AddOptionSlider({"Hero Specific","Enigma"}, "Next order ticks / 10", 1, 10, 1)
 	Menu.AddMenuIcon({"Hero Specific", "Enigma"}, "panorama/images/heroes/icons/npc_dota_hero_enigma_png.vtex_c")
 	Enigma.useBKB = Menu.AddOptionBool({"Hero Specific","Enigma"},"BKB",false)
 	Enigma.useShiva = Menu.AddOptionBool({"Hero Specific","Enigma"},"Shiva",false)
@@ -52,7 +53,7 @@ local Enigma = {}
 		if not Ability.IsReady(Enigma.black_hole) or not Ability.IsCastable(Enigma.black_hole, Enigma.heroMana) then 		
 			if not Enigma.refresher or not Ability.IsReady(Enigma.refresher) or not Ability.IsCastable(Enigma.refresher, Enigma.heroMana - Ability.GetManaCost(Enigma.black_hole)) then return end
 		end	
-		if Menu.IsKeyDown(Enigma.optionKey) and Enigma.GameTime - Enigma.Delay > Enigma.TimerCombo then Enigma.Combo() end
+		if Menu.IsKeyDown(Enigma.optionKey) then Enigma.Combo() end
 	end		
 	local distance = 0
 	function Enigma.Combo()
@@ -76,6 +77,7 @@ local Enigma = {}
 	end
 	
 	function Enigma.DelayUpdate()	
+		Enigma.Delay = Menu.GetValue(Enigma.SliderDelay) * 0.1
 		Enigma.TimerInfo = Enigma.GameTime
 		Enigma.NextOrder = 0
 		Enigma.enemyes = nil
@@ -84,7 +86,7 @@ local Enigma = {}
 		if not Enigma.enemyes or #Enigma.enemyes == 0 then return end
 		Enigma.bestPos, Enigma.countEn = Enigma.BestPosition(Enigma.enemyes, black_hole_radius + 21)
 		
-		Enigma.blink = NPC.GetItem(Enigma.Hero, "item_blink")
+		Enigma.blink = NPC.GetItem(Enigma.Hero, "item_blink") 	
 		Enigma.shiva = NPC.GetItem(Enigma.Hero, "item_shivas_guard")
 		Enigma.bkb = NPC.GetItem(Enigma.Hero, "item_black_king_bar")
 		Enigma.refresher = NPC.GetItem(Enigma.Hero, "item_refresher")
@@ -109,7 +111,8 @@ local Enigma = {}
 		
 		if Enigma.black_hole and Ability.IsReady(Enigma.black_hole) then Enigma.NextOrder = 5 return end		
 		if Enigma.refresher and Ability.IsReady(Enigma.refresher) and Menu.IsEnabled(Enigma.useRefresher) 
-			then Enigma.NextOrder = 6 return end		
+			then Enigma.NextOrder = 6 return end	
+		Enigma.NextOrder = 0 return 
 		
 	end
 	
