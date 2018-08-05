@@ -102,6 +102,7 @@ local Enigma = {}
 		
 				
 					
+		if Enigma.blink and not Ability.IsReady(Enigma.blink) and distance > black_hole_radius  then Enigma.NextOrder = 0 return end
 		if Enigma.blink and Ability.IsReady(Enigma.blink) and distance > black_hole_radius  then Enigma.NextOrder = 1 return end
 		if Menu.IsEnabled(Enigma.soulRing) and Enigma.soulRing and Ability.IsReady(Enigma.soulring) then Enigma.NextOrder = 7 return end
 		if Menu.IsEnabled(Enigma.useBKB) and Enigma.bkb and Ability.IsReady(Enigma.bkb) then Enigma.NextOrder = 2 return end
